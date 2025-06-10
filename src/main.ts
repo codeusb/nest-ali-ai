@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { AuthGuard } from './user/auth.guard';
+import { Reflector } from '@nestjs/core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +20,10 @@ async function bootstrap() {
 
   // 全局异常过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // 全局认证守卫
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(new AuthGuard(reflector));
 
   await app.listen(process.env.PORT ?? 3000);
 }

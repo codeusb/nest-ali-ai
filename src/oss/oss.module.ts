@@ -12,11 +12,11 @@ import { OssService } from './oss.service';
     {
       provide: 'OSS_CLIENT',
       useFactory(config: ConfigService) {
-        const client = new OSS({
-          region: config.get('OSS_REGION') as string,
-          bucket: config.get('OSS_BUCKET') as string,
-          accessKeyId: config.get('OSS_ACCESS_KEY_ID') as string,
-          accessKeySecret: config.get('OSS_ACCESS_KEY_SECRECT') as string,
+        const client = new OSS.default({
+          region: config.get<string>('OSS_REGION')!,
+          bucket: config.get<string>('OSS_BUCKET')!,
+          accessKeyId: config.get<string>('OSS_ACCESS_KEY_ID')!,
+          accessKeySecret: config.get<string>('OSS_ACCESS_KEY_SECRECT')!,
         });
         return client;
       },
