@@ -7,7 +7,7 @@ import {
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { OssService, ResponseData } from './oss.service';
+import { OssService } from './oss.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('upload')
@@ -17,9 +17,7 @@ export class OssController {
 
   @Post('image')
   @UseInterceptors(FileInterceptor('file'))
-  uploadImage(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<ResponseData> {
+  uploadImage(@UploadedFile() file: Express.Multer.File): Promise<any> {
     return this.ossService.uploadImage(file);
   }
 
@@ -27,7 +25,7 @@ export class OssController {
   getFileUrl(
     @Query('objectName') objectName: string,
     @Query('expires') expires?: number,
-  ): ResponseData {
+  ): any {
     return this.ossService.getFileUrl(objectName, expires);
   }
 }
