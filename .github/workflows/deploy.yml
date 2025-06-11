@@ -1,0 +1,44 @@
+name: Deploy to Aliyun
+
+on:
+  push:
+    branches: ['master'] # 当推送到 master 分支时触发
+  workflow_dispatch: # 允许手动触发
+
+env:
+  IMAGE_NAME: nest-ali-ai # 替换为你的应用名称
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Aliyun Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          script: |
+            # 进入项目目录
+            cd /dxf/nest-ali-ai
+
+            # 拉取最新代码
+            git pull origin master
+
+            # 检查并停止所有使用 3000 端口的容器
+            for container in $(docker ps -q); do
+              if docker port $container | grep -q "3000/tcp"; then
+                echo "Stopping container using port 3000: $container"
+                docker stop $container
+                docker rm $container
+              fi
+            done
+
+            # 构建并启动
+            docker-compose up -d --build
+
+            # 可选：清理无用镜像
+            docker image prune -f
