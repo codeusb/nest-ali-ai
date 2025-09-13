@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Global, Module } from '@nestjs/common';
-import * as OSS from 'ali-oss';
+import * as Minio from 'minio';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { OssController } from './oss.controller';
 import { OssService } from './oss.service';
@@ -10,13 +14,14 @@ import { OssService } from './oss.service';
   controllers: [OssController],
   providers: [
     {
-      provide: 'OSS_CLIENT',
+      provide: 'MINIO_CLIENT',
       useFactory(config: ConfigService) {
-        const client = new OSS.default({
-          region: config.get<string>('OSS_REGION')!,
-          bucket: config.get<string>('OSS_BUCKET')!,
-          accessKeyId: config.get<string>('OSS_ACCESS_KEY_ID')!,
-          accessKeySecret: config.get<string>('OSS_ACCESS_KEY_SECRECT')!,
+        const client = new Minio.Client({
+          endPoint: config.get<string>('MINIO_ENDPOINT', 'localhost'),
+          port: parseInt(config.get<string>('MINIO_PORT', '9000'), 10) || 9000,
+          useSSL: config.get<string>('MINIO_USE_SSL', 'false') === 'true',
+          accessKey: config.get<string>('MINIO_ACCESS_KEY', 'minioadmin'),
+          secretKey: config.get<string>('MINIO_SECRET_KEY', 'minioadmin'),
         });
         return client;
       },
@@ -24,6 +29,6 @@ import { OssService } from './oss.service';
     },
     OssService,
   ],
-  exports: ['OSS_CLIENT'],
+  exports: ['MINIO_CLIENT'],
 })
 export class OssModule {}

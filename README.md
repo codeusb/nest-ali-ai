@@ -23,7 +23,42 @@
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository with SQLite database and MinIO object storage.
+
+## 项目改造说明
+
+本项目已从 MySQL + 阿里云 OSS 改造为 SQLite + MinIO：
+
+- **数据库**: MySQL → SQLite (本地文件数据库)
+- **对象存储**: 阿里云 OSS → MinIO (本地对象存储)
+
+## 环境变量配置
+
+创建 `.env` 文件并配置以下环境变量：
+
+```bash
+# 数据库配置
+SQLITE_DATABASE=database.sqlite
+
+# MinIO 配置
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_USE_SSL=false
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=nest-ali-ai
+
+# JWT 配置
+JWT_SECRET=your-jwt-secret-key
+JWT_EXPIRES_IN=7d
+
+# OpenAI 配置
+OPENAI_API_KEY=your-openai-api-key
+
+# 应用配置
+NODE_ENV=development
+PORT=3000
+```
 
 ## Project setup
 
@@ -31,18 +66,49 @@
 $ pnpm install
 ```
 
-## Compile and run the project
+## 运行项目
+
+### 本地开发
 
 ```bash
-# development
-$ pnpm run start
+# 安装依赖
+$ pnpm install
 
-# watch mode
+# 开发模式
 $ pnpm run start:dev
 
-# production mode
+# 生产模式
 $ pnpm run start:prod
 ```
+
+### Docker 运行
+
+#### 快速启动（推荐）
+
+```bash
+# 使用启动脚本一键启动
+$ chmod +x start.sh
+$ ./start.sh
+```
+
+#### 手动启动
+
+```bash
+# 使用 Docker Compose 启动所有服务
+$ docker-compose up -d
+
+# 查看服务状态
+$ docker-compose ps
+
+# 查看日志
+$ docker-compose logs -f app
+```
+
+服务访问地址：
+
+- 应用服务: http://localhost:3000
+- MinIO 控制台: http://localhost:9001 (用户名: minioadmin, 密码: minioadmin)
+- MinIO API: http://localhost:9000
 
 ## Run tests
 

@@ -10,19 +10,23 @@ services:
     env_file:
       - /dxf/env/.env.prod
     depends_on:
-      - mysql
+      - minio
+    volumes:
+      - ./database.sqlite:/app/database.sqlite
     networks:
       - app-network
 
-  mysql:
-    image: mysql:8.0
+  minio:
+    image: minio/minio:latest
     ports:
-      - '3307:3306'
+      - '9000:9000'
+      - '9001:9001'
     environment:
-      - MYSQL_ROOT_PASSWORD=12345678
-      - MYSQL_DATABASE=nest_demo
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
     volumes:
-      - mysql-data:/var/lib/mysql
+      - minio-data:/data
+    command: server /data --console-address ":9001"
     networks:
       - app-network
 
@@ -31,4 +35,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  minio-data:

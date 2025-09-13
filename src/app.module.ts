@@ -16,14 +16,11 @@ import { OpenAIModule } from './openai/openai.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        type: 'mysql',
-        host: config.get('MYSQL_HOST', 'localhost'),
-        port: +config.get('MYSQL_PORT'),
-        username: config.get('MYSQL_USER'),
-        password: config.get('MYSQL_PASSWORD'),
-        database: config.get('MYSQL_DATABASE'),
+        type: 'better-sqlite3',
+        database: config.get('SQLITE_DATABASE', 'database.sqlite'),
         autoLoadEntities: true,
         synchronize: true, // 生产环境建议关闭
+        logging: config.get('NODE_ENV') === 'development',
       }),
     }),
     OssModule,
